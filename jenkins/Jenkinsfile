@@ -6,15 +6,6 @@ pipeline {
   }
 
   stages {
-    stage('Terraform - Cluster Setup') {
-      steps {
-        dir('terraform') {
-          sh 'terraform init'
-          sh 'terraform apply -auto-approve'
-        }
-      }
-    }
-
     stage('Helm - PostgreSQL Deploy') {
       steps {
         dir('helm/postgresql') {
