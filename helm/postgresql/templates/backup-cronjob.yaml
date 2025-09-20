@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-pg-backup
+spec:
+  schedule: "0 2 * * *"   # her gün 02:00
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: pg-backup
+              image: postgres:16-alpine
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: POSTGRES_HOST
+                  value: "{{ .Release.Name }}-postgresql"
+                - name: POSTGRES_DB
+                  value: "postgres"
+                - name: POSTGRES_USER
+                  value: "postgres"
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: "{{ .Release.Name }}-postgresql"
+                      key: postgres-password
+              command:
+                - /bin/sh
+                - -lc
+                - >
+                  pg_dumpall -h "$POSTGRES_HOST" -U "$POSTGRES_USER"
+                  > /backups/backup-$(date +\%F).sql
+              volumeMounts:
+                - name: backup
+                  mountPath: /backups
+          volumes:
+            - name: backup
+              persistentVolumeClaim:
+                claimName: {{ .Release.Name }}-pg-backup

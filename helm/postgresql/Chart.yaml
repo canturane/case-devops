@@ -1,0 +1,10 @@
+apiVersion: v2
+name: postgres-stack
+description: PostgreSQL with persistence + daily backup CronJob
+type: application
+version: 0.1.0
+
+dependencies:
+  - name: postgresql
+    repository: https://charts.bitnami.com/bitnami
+    version: ">=14.0.0 <18.0.0"

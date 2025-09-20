@@ -1,0 +1,18 @@
+postgresql:
+  auth:
+    enablePostgresUser: true
+    # postgres (superuser) password → boş bırakırsak chart otomatik üretir
+    postgresPassword: ""
+    # app için ayrı kullanıcı
+    username: "appuser"
+    password: ""        # boş bırak → chart otomatik üretir
+    database: "appdb"
+
+  primary:
+    service:
+      type: NodePort
+      nodePorts:
+        postgresql: 30432   # host dışından bağlanabilmek için
+    persistence:
+      enabled: true
+      size: 8Gi

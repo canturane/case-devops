@@ -1,0 +1,16 @@
+redis:
+  auth:
+    enabled: true
+    password: ""    # boş → chart random password üretir
+
+  master:
+    service:
+      type: NodePort
+      nodePorts:
+        redis: 30379
+    persistence:
+      enabled: true
+      size: 2Gi
+
+  replica:
+    replicaCount: 0   # basitlik için sadece master

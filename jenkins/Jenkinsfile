@@ -1,0 +1,49 @@
+pipeline {
+  agent any
+
+  options {
+    ansiColor('xterm')
+    timestamps()
+  }
+
+  stages {
+    stage('Terraform - Cluster Setup') {
+      steps {
+        dir('terraform') {
+          sh 'terraform init'
+          sh 'terraform apply -auto-approve'
+        }
+      }
+    }
+
+    stage('Helm - PostgreSQL Deploy') {
+      steps {
+        dir('helm/postgresql') {
+          sh 'helm dependency update'
+          sh 'helm upgrade --install my-postgres .'
+        }
+      }
+    }
+
+    stage('Helm - Redis Deploy') {
+      steps {
+        dir('helm/redis') {
+          sh 'helm dependency update'
+          sh 'helm upgrade --install my-redis .'
+        }
+      }
+    }
+
+    stage('Tests') {
+      steps {
+        sh 'bash scripts/test_postgres.sh'
+        sh 'bash scripts/test_redis.sh'
+      }
+    }
+  }
+
+  post {
+    success { echo '✅ Pipeline başarıyla tamamlandı!' }
+    failure { echo '❌ Pipeline başarısız oldu.' }
+  }
+}

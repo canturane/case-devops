@@ -1,0 +1,10 @@
+apiVersion: v2
+name: redis-stack
+description: Redis with persistence
+type: application
+version: 0.1.0
+
+dependencies:
+  - name: redis
+    repository: https://charts.bitnami.com/bitnami
+    version: ">=17.0.0 <20.0.0"
